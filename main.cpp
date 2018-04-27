@@ -2,8 +2,32 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+#include <random>
 
 using namespace std;
+using namespace std::chrono;
+
+vector<vector<int>> generator(int m, int n){
+    std::mt19937 rng;
+    rng.seed(std::random_device()());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(0,10);
+    int i, j;
+    vector<vector<int>> ans;
+    for( i = 0; i < m; i++){
+        vector<int> row;
+        for(j = 0;j < n ; j++){
+            if (i+j % 5 != 5) {
+                row.push_back(dist6(rng));
+            }
+            else{
+                row.push_back(0);
+            }
+        }
+        ans.push_back(row);
+    }
+    return ans;
+}
 
 
 int f(vector<vector<int>> a){
@@ -350,6 +374,7 @@ int main() {
     vector<vector<int>> v1, v2, v3;
     int i_1, j_1;
     int i_2, j_2;
+    /*
     cout << "enter the dimensions of matrix1\n";
     cin >> i_1 >> j_1;
     cout << '\n';
@@ -378,18 +403,47 @@ int main() {
         matrix2.push_back(row);
     }
     //print(matrix1);
-    vector<vector<int>> m1, m2;
-    m1 = converter(matrix1);
-    m2 = converter(matrix2);
+    */
+    vector<vector<int>> m1, m2, m3, m4;
+    //m1 = converter(matrix1);
+    //m2 = converter(matrix2);
     //print(m1);
     //cout << "a\n";
     //print(m2);
     //cout <<"a\n";
-    v1 = retriever(naive_multi(m1, m2), i_1, j_2);
+    m3 = generator(128, 128);
+    m4 = generator(128, 128);
+
+
+    auto start = high_resolution_clock::now();
+    v1 = retriever(naive_multi(m3, m4), 128, 128);
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(start - stop);
+
+    cout << "tiime taken by function" << duration.count() << endl;
     //print(v1);
-    v2 = retriever(strassen(m1, m2), i_1, j_2);
-    v3 = retriever(fast_multi(m1, m2), i_1, j_2);
+
+
+
+    auto start_2 = high_resolution_clock::now();
+    v2 = retriever(strassen(m3, m4), 128, 128);
+    auto stop_2 = high_resolution_clock::now();
+    auto duration_2 = duration_cast<microseconds>(start_2 - stop_2);
+
+    cout << "tiime taken by function" << duration_2.count() << endl;
+
+
+    auto start_3 = high_resolution_clock::now();
+    v3 = retriever(fast_multi(m3, m4), 128, 128);
+    auto stop_3 = high_resolution_clock::now();
+    auto duration_3 = duration_cast<microseconds>(start_3 - stop_3);
+
+
+    cout << "tiime taken by function" << duration_3.count() << endl;
+
+
     //print(v2);
-    print(v3);
+    print(v1);
+
     return 0;
 }
